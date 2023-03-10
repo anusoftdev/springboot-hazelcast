@@ -6,12 +6,15 @@ import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
 import com.anusoft.hazelcast.model.Book;
 
 @Component
 public class BookRepository {
+	
+	private static final String BOOKS = "books";
 	
 	private static Map<String, Book> books = new HashMap<String, Book>();
 
@@ -22,6 +25,7 @@ public class BookRepository {
 		books.put("B103", new Book("B103", "Ramayan", "Valmiki", 349.00, "Diamond Publication"));
 	}
 
+	@Cacheable(value = BOOKS, key = "#id")
 	public Optional<Book> findBookById(String id) {
 		try {
 			Thread.sleep(2000);
@@ -31,6 +35,7 @@ public class BookRepository {
 		return Optional.of(books.get(id));
 	}
 
+	@Cacheable(value = BOOKS, key = "#id")
 	public Book updateBook(String id, Book book) throws Exception {
 		if(Optional.of(books.get(id)).isPresent()) {
 			book.setId(id);
